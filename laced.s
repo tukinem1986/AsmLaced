@@ -124,7 +124,7 @@ Copper1:
 	dc.l	$01080050,$010a0050	;BPL1MOD & BPL2MOD
 	dc.l	$01800000,$01820880	;COL0 & COL1
 	dc.l	$00e00000,$00e20000	;BITPLAN 1
-	dc.l	$01009200		;BPLCON0 1 bitplan+hires+interlaced
+	dc.l	$01009204		;BPLCON0 1 bitplan+hires+interlaced
 	dc.l	$ffdffffe		;LINE $FF
 	dc.l	$2c01ff00		;CZEKAM NA LINIE 256+44
 cop2jmp:dc.l	$00800000		;URUCHAMIAM DRUGA COPPERLISTE
@@ -140,7 +140,7 @@ Copper2:
 	dc.l	$01080050,$010a0050
 	dc.l	$01800000,$01820880
 	dc.l	$00e00000,$00e20000
-	dc.l	$01009200
+	dc.l	$01009204
 	dc.l	$ffdffffe
 	dc.l	$2c01ff00
 cop1jmp:dc.l	$00800000
