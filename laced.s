@@ -53,6 +53,7 @@ InitCopJumps:
 	move.w	#$0020,$dff096	;DMA
 	move.w	#$a204,$dff100	;BPLCON0
 	move.w	#$7fff,$dff09a	;INTENA
+	move.w	#$7fff,$dff09c	;INTREQ
 	
 
 	move.l	#Copper1,D0
@@ -74,6 +75,12 @@ InitColors:
 	rts
 ;--------------------------------------------------------------
 OsStore
+	move.l	4,a6
+	jsr	-132(a6)
+	move.w	$dff01c,d0
+	or.w	#$8000,d0
+	move.w	d0,osOldIntena
+	
 	move.l	#0,$dff0a0
 	move.l	#0,$dff0b0
 	move.w	#$3,$dff096
@@ -98,6 +105,10 @@ OsRestore
 	move.l	#Copper0,$dff080
 	move.w	#0,$dff088
 	bsr	VBlank
+	move.w	osOldIntena,$dff09a
+	move.l	4,a6
+	jsr	-138(a6)
+	
 	move.w	osOldDma,$dff096
 	move.l	gfxBase,a6
 	jsr	-228(a6)
@@ -128,6 +139,7 @@ gfxName:	dc.b "graphics.library",0
 gfxBase:	dc.l 0
 osOldView:	dc.l 0
 osOldDma:	dc.w 0
+osOldIntena:	dc.w 0
 	Section ChipRAM,DATA_C
 
 Copper0:	dc.l 0
