@@ -1,6 +1,7 @@
 	bsr	OsStore
 	bsr	InitPlanes
-	bsr	InitCopJumps	
+	bsr	InitCopJumps
+	bsr	InitColors
 
 
 		
@@ -21,24 +22,36 @@ MouseWait:
 ;--------------------------------------------------------------
 InitPlanes:
 	move.l	#RAW,D0
-	move.l	#Copper1,A0
-	move.l	#Copper2,A1
-	adda.l	#48,A0
-	adda.l	#48,A1
-;LINIE PARZYSTE
-	move.w	D0,6(A0)
-	swap	D0
-	move.w	D0,2(A0)
-	swap	D0
-;LINIE NIEPARZYSTE
-	add.l	#80,D0
-	move.w	D0,6(A1)
-	swap	D0
-	move.w	D0,2(A0)
-	move.w	D0,2(A1)
+	moveq	#1,d7
+	move.l	#Copper1,a0
+	move.l	#Copper2,a1
+.PlanesLoop:
+	move.w	d0,6(a0)
+	swap	d0
+	move.w	d0,2(a0)
+	swap	d0
+	add.l	#80,d0
+	move.w	d0,6(a1)
+	swap	d0
+	move.w	d0,2(a1)
+	swap	d0
+	adda.l	#8,a0
+	adda.l	#8,a1
+	add.l	#511*80,d0
+	dbf	d7,.PlanesLoop
 	rts
 ;--------------------------------------------------------------
 InitCopJumps:
+	move.w	#$50,$dff108		;BPL1MOD
+	move.w	#$50,$dff10a		;BPL2MOD
+	move.w	#$a204,$dff100		;BPLCON0
+	move.w	#$2c81,$dff08e		;DIWSTRT
+	move.w	#$2cc1,$dff090		;DIWSTOP
+	move.w	#$0038,$dff092		;DDFSTRT
+	move.w	#$00d0,$dff094		;DDFSTOP
+	move.w	#$0000,$dff1fc		;FMODE
+	move.w	#$0020,$dff096		;DMA
+	
 
 	move.l	#Copper1,D0
 	move.l	#Copper2,D1
@@ -49,6 +62,13 @@ InitCopJumps:
 	move.w	D1,cop2jmp+6
 	swap	D1
 	move.w	D1,cop2jmp+2
+	rts
+;--------------------------------------------------------------
+InitColors:
+	move.w	#$606,$dff180
+	move.w	#$000,$dff182
+	move.w	#$eee,$dff184
+	move.w	#$24e,$dff186
 	rts
 ;--------------------------------------------------------------
 OsStore
@@ -111,42 +131,19 @@ osOldDma:	dc.w 0
 Copper0:	dc.l 0
 
 Copper1:
-
-;	NTSC
-;	dc.l	$008e2c81,$0090f4c1
-;	dc.l	$0092003c,$009400d4
-
-	dc.l	$008e2c81,$00902cc1	;DIWSTRT & DIWSTOP
-	dc.l	$00920038,$009400d0	;DDFSTRT & DDFSTOP
-	dc.l	$01fc0000		;FMODE
-	dc.l	$00960020		;DMA
-	dc.l	$01020000,$01040000	;BPLCON1 & BPLCON2
-	dc.l	$01080050,$010a0050	;BPL1MOD & BPL2MOD
-	dc.l	$01800000,$01820880	;COL0 & COL1
 	dc.l	$00e00000,$00e20000	;BITPLAN 1
-	dc.l	$01009204		;BPLCON0 1 bitplan+hires+interlaced
-	dc.l	$ffdffffe		;LINE $FF
-	dc.l	$2c01ff00		;CZEKAM NA LINIE 256+44
-cop2jmp:dc.l	$00800000		;URUCHAMIAM DRUGA COPPERLISTE
-	dc.l	$00820000		;
-	dc.l	$fffffffe		;KONIEC
+	dc.l	$00e40000,$00e60000	;BITPLAN 2
+cop2jmp:dc.l	$00800000		;COP2LCH
+	dc.l	$00820000		;COP2LCL
+	dc.l	$fffffffe		;END COPPERLIST
 
 Copper2:
-	dc.l	$008e2c81,$00902cc1
-	dc.l	$00920038,$009400d0
-	dc.l	$01fc0000
-	dc.l	$00960020
-	dc.l	$01020000,$01040000
-	dc.l	$01080050,$010a0050
-	dc.l	$01800000,$01820880
 	dc.l	$00e00000,$00e20000
-	dc.l	$01009204
-	dc.l	$ffdffffe
-	dc.l	$2c01ff00
+	dc.l	$00e40000,$00e60000
 cop1jmp:dc.l	$00800000
 	dc.l	$00820000
 	dc.l	$fffffffe
 
 
-RAW:	IncBin "DHC:AsmLaced/laced.raw"
+RAW:	IncBin "DHC:AsmLaced/girl.raw"
 
