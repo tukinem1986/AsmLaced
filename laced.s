@@ -4,8 +4,8 @@
 	bsr	InitColors
 
 
-		
 	move.l	#Copper1,$dff080
+	bset	#5,$dff1dc	;TURN INTO PAL SYSTEM(50Hz)
 
 ;--------------------------------------------------------------
 ;--------------------------------------------------------------
@@ -42,15 +42,15 @@ InitPlanes:
 	rts
 ;--------------------------------------------------------------
 InitCopJumps:
-	move.w	#$50,$dff108		;BPL1MOD
-	move.w	#$50,$dff10a		;BPL2MOD
-	move.w	#$a204,$dff100		;BPLCON0
+	move.w	#$0050,$dff108		;BPL1MOD
+	move.w	#$0050,$dff10a		;BPL2MOD
 	move.w	#$2c81,$dff08e		;DIWSTRT
-	move.w	#$2cc1,$dff090		;DIWSTOP
+	move.w	#$2ce1,$dff090		;DIWSTOP
 	move.w	#$0038,$dff092		;DDFSTRT
 	move.w	#$00d0,$dff094		;DDFSTOP
 	move.w	#$0000,$dff1fc		;FMODE
 	move.w	#$0020,$dff096		;DMA
+	move.w	#$a204,$dff100		;BPLCON0
 	
 
 	move.l	#Copper1,D0
@@ -65,7 +65,7 @@ InitCopJumps:
 	rts
 ;--------------------------------------------------------------
 InitColors:
-	move.w	#$606,$dff180
+	move.w	#$666,$dff180
 	move.w	#$000,$dff182
 	move.w	#$eee,$dff184
 	move.w	#$24e,$dff186
