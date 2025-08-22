@@ -6,7 +6,9 @@
 
 
 	move.l	#Copper1,$dff080
+	move.w	#0,$dff088
 	bset	#5,$dff1dc	;TURN INTO PAL SYSTEM(50Hz)
+
 
 ;--------------------------------------------------------------
 ;--------------------------------------------------------------
@@ -52,9 +54,9 @@ InitCopJumps:
 	move.w	#$0000,$dff1fc	;FMODE
 	move.w	#$0020,$dff096	;DMA
 	move.w	#$a204,$dff100	;BPLCON0
+	move.w	#$0000,$dff102	;BPLCON1
+	move.w	#$0000,$dff104	;BPLCON2
 	move.w	#$7fff,$dff09a	;INTENA
-	move.w	#$7fff,$dff09c	;INTREQ
-	
 
 	move.l	#Copper1,D0
 	move.l	#Copper2,D1
@@ -68,10 +70,10 @@ InitCopJumps:
 	rts
 ;--------------------------------------------------------------
 InitColors:
-	move.w	#$666,$dff180
+	move.w	#$aaa,$dff180
 	move.w	#$000,$dff182
-	move.w	#$eee,$dff184
-	move.w	#$24e,$dff186
+	move.w	#$fff,$dff184
+	move.w	#$68b,$dff186
 	rts
 ;--------------------------------------------------------------
 OsStore
