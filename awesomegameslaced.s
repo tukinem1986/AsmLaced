@@ -168,21 +168,21 @@ OsRestore:
 	move.l	#Copper0,$dff080
 	move.w	#0,$dff088
 	bsr	VWait
-	move.w	osOldIntena,$dff09a
+	move.w	osOldIntena(pc),$dff09a
 	move.l	4,a6
 	jsr	-138(a6)
 	
-	move.w	osOldDma,$dff096
-	move.l	gfxBase,a6
+	move.w	osOldDma(pc),$dff096
+	move.l	gfxBase(pc),a6
 	jsr	-228(a6)
 	jsr	-462(a6)
-	move.l	osOldView,a1
+	move.l	osOldView(pc),a1
 	jsr	-222(a6)
 	jsr	-270(a6)
 	jsr	-270(a6)
 	move.l	$26(a6),$dff080
 	move.l	4,a6
-	move.l	gfxBase,a1
+	move.l	gfxBase(pc),a1
 	jsr	-414(a6)
 	rts
 ;--------------------------------------------------------------
