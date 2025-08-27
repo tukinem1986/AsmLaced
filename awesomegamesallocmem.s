@@ -62,11 +62,15 @@ EndLoop:
 
 ;--------------------------------------------------------------
 ;FREE MEM FROM CHIP RAM
-	lea	chipPtr(pc),a1
+	move.l	chipPtr,a1
 	move.l	#30852,d0
 	bsr	FreeMem
 	rts
 ;--------------------------------------------------------------
+
+
+
+
 
 
 	include "ASM_DOS.s"
@@ -152,16 +156,17 @@ OsRestore:
 	move.l	4,a6
 	move.l	gfxBase,a1
 	jsr	-414(a6)
+	rts
 ;--------------------------------------------------------------
 
 
-chipPtr:	dc.l	0
 Y:		dc.w	0
 gfxName:	dc.b	"graphics.library",0
 	even
 gfxBase:	dc.l	0
 osOldView:	dc.l	0
 osOldDma:	dc.w	0
+chipPtr:	dc.l	0
 
 
 	Section	ChipRam,DATA_C
