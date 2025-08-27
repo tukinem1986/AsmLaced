@@ -209,6 +209,7 @@ Copper1:
 	dc.l	$00e40000,$00e60000
 	dc.l	$00e80000,$00ea0000
 	dc.l	$01080050,$010a0050
+	dc.l	$2c01fffe
 cop1ntsc:
 	dc.l	$01fe00
 	dc.l	$0001ff00,$0108ffb0,$010affb0
@@ -222,6 +223,7 @@ Copper2:
 	dc.l	$00e40000,$00e60000
 	dc.l	$00e80000,$00ea0000
 	dc.l	$01080050,$010a0050
+	dc.l	$2c01fffe
 cop2ntsc:
 	dc.l	$01fe00
 	dc.l	$0001ff00,$0108ffb0,$010affb0
