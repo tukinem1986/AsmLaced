@@ -1,0 +1,133 @@
+
+****************************************************************************
+	SECTION	awesomegamesallocmembin000000,CODE
+ProgStart
+	MOVE.L	#$7884,D0
+	MOVEQ	#2,D1
+
+	move.l	4.W,A6
+	jsr	-$C6(A6)
+
+	MOVEA.L	D0,A3
+	LEA	lbW000242(PC),A0
+	MOVEA.L	A3,A1
+	MOVE.L	#$1E20,D7
+lbC00001A	MOVE.L	(A0)+,(A1)+
+	DBRA	D7,lbC00001A
+	BSR.W	lbC000176
+	BSR.W	lbC000146
+	MOVE.L	A3,D0
+	ADDI.L	#12,D0
+	MOVE.L	D0,$DFF080
+	MOVE.L	#$122,D7
+lbC00003C	BSR.b	lbC000132
+	ADDQ.B	#1,$74(A3)
+	TST.B	$74(A3)
+	BEQ.b	lbC000060
+	BTST	#6,$BFE001
+	BEQ.b	lbC000086
+	DBRA	D7,lbC00003C
+	BRA.b	lbC00006C
+
+lbC000060	MOVE.L	#$FFDFFFFE,$70(A3)
+	DBRA	D7,lbC00003C
+lbC00006C	MOVE.L	#$122,D7
+	BSR.b	lbC000132
+	BTST	#6,$BFE001
+	BEQ.b	lbC000086
+	BRA.b	lbC00006C
+
+lbC000086	BSR.b	lbC000132
+	SUBQ.B	#1,$74(A3)
+;	TST.B	$74(A3)
+	BEQ.b	lbC00009E
+	DBRA	D7,lbC000086
+	BRA.b	lbC0000AE
+
+lbC00009E	MOVE.L	#$1FE00,$70(A3)
+	SUBQ.B	#1,$74(A3)
+	DBRA	D7,lbC000086
+lbC0000AE
+	BSR.W	lbC0001D8
+	MOVEA.L	A3,A1
+	MOVE.L	#$7884,D0
+	move.l	4.W,A6
+	jmp	-$D2(A6)
+
+
+lbC000132	LEA	$DFF004,A0
+lbC000138	LSR.W	(A0)
+	BCC.b	lbC000138
+lbC00013E	LSR.W	(A0)
+	BCS.b	lbC00013E
+	RTS
+
+lbC000146
+;	MOVEA.L	A3,A0
+;	ADDA.L	#$38,A0
+	lea	$38(A3),A0
+;	MOVE.L	A3,D0
+;	ADDI.L	#$84,D0
+	moveq	#$84-$38,D0
+	add.l	A0,D0
+	MOVEQ	#2,D1
+lbC000158	MOVE.W	D0,6(A0)
+	SWAP	D0
+	MOVE.W	D0,2(A0)
+	SWAP	D0
+	ADDI.L	#$2800,D0
+	addq.l	#8,A0
+	DBRA	D1,lbC000158
+	RTS
+
+lbC000176
+;	MOVE.L	#0,$DFF0A0			; a to po co tu?
+;	MOVE.L	#0,$DFF0B0			;
+;	MOVE.W	#3,$DFF096			;
+	move.l	4.W,A6
+	LEA	graphicslibra.MSG(PC),A1
+	JSR	-$198(A6)
+;	MOVE.L	D0,lbL000238
+	lea	lbL000238(PC),A2
+	move.l	D0,(A2)+
+
+	MOVEA.L	D0,A6
+;	MOVE.L	$22(A6),lbL00023C
+	move.l	$22(A6),(A2)+
+
+	JSR	-$1C8(A6)
+	JSR	-$E4(A6)
+	SUBA.L	A1,A1
+	JSR	-$DE(A6)
+	JSR	-$10E(A6)
+	JSR	-$10E(A6)
+	MOVE.W	$DFF002,D0
+	ORI.W	#$8000,D0
+;	MOVE.W	D0,lbW000240
+	move.w	D0,(A2)
+	RTS
+
+lbC0001D8	MOVE.L	A3,$DFF080
+	MOVE.W	D0,$DFF088	; nie wiem czy tu nie powinno byc zero. a nie D0
+	BSR.W	lbC000132
+	MOVE.W	lbW000240(PC),$DFF096
+	MOVEA.L	lbL000238(PC),A6
+	JSR	-$E4(A6)
+	JSR	-$1CE(A6)
+	MOVEA.L	lbL00023C(PC),A1
+	JSR	-$DE(A6)
+	JSR	-$10E(A6)
+	JSR	-$10E(A6)
+	MOVE.L	$26(A6),$DFF080
+	move.l	4.W,A6
+	MOVEA.L	lbL000238(PC),A1
+	jmp	-$19E(A6)
+
+;lbB000224	dc.b	0
+;lbB000225	dc.b	0
+graphicslibra.MSG	dc.b	'graphics.library',0,0
+lbL000238	dc.l	0
+lbL00023C	dc.l	0
+lbW000240	dc.w	0
+lbW000242
+	incbin	all
