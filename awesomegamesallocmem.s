@@ -8,28 +8,37 @@
 	move.l	#30852,d0	;size
 	moveq	#2,d1		;chipram
 	bsr	AllocMem
-	move.l	d0,chipPtr
+	move.l	d0,a3		;chipPtr in A3
 ;--------------------------------------------------------------
-
+; COPY DATA TO CHIP RAM
+	lea	Copper0(pc),a0
+	move.l	a3,a1
+	move.l	#7713-1,d7
+CopyLoop:
+	move.l	(a0)+,(a1)+
+	dbf	d7,CopyLoop
+;--------------------------------------------------------------
 
 
 
 	
 	bsr	OsStore
 	bsr	InitPlanes
-	move.l	#Copper,$dff080
-	move.l	#299,d7
+	move.l	a3,d0
+	add.l	#12,d0
+	move.l	d0,$dff080
+	move.l	#290,d7
 StartLoop:
 	bsr	VWait
-	addq.b	#1,Raster
-	tst.b	Raster
+	addq.b	#1,116(a3)
+	tst.b	116(a3)
 	beq	.Dwn
 	btst	#6,$bfe001
-	beq	End
+	beq	EndLoop
 	dbf	d7,StartLoop
 	bra	MAINLOOP
 .Dwn
-	move.l	#$ffdffffe,L212
+	move.l	#$ffdffffe,112(a3)
 	dbf	d7,StartLoop
 
 
@@ -39,24 +48,22 @@ MAINLOOP:
 	
 CheckMouse:
 	btst	#6,$bfe001
-	beq	End
+	beq	EndLoop
 
 
 
 	bra	MAINLOOP
 
-End:
-;	move.l	#290,d7
 EndLoop:
 	bsr	VWait
-	subq.b	#1,Raster
-	tst.b	Raster
+	subq.b	#1,116(a3)
+	tst.b	116(a3)
 	beq	.Up
 	dbf	d7,EndLoop
 	bra	ENDPROG
 .Up
-	move.l	#$01fe00,L212
-	subq.b	#1,Raster
+	move.l	#$01fe00,112(a3)
+	subq.b	#1,116(a3)
 	dbf	d7,EndLoop
 
 
@@ -66,7 +73,7 @@ ENDPROG:
 	bsr	OsRestore
 	
 ;FREE MEM FROM CHIP RAM
-	move.l	chipPtr,a1
+	move.l	a3,a1
 	move.l	#30852,d0
 	bsr	FreeMem
 	rts
@@ -87,11 +94,11 @@ MathY:
 ChangeRaster:
 	tst.b	Y+1
 	beq	.DownLines
-	move.b	Y+1,Raster
+	move.b	Y+1,116(a3)
 	rts
 	
 .DownLines:
-	move.l	#$ffdffffe,L212
+	move.l	#$ffdffffe,112(a3)
 	rts
 
 
@@ -109,8 +116,10 @@ VWait:
 
 
 InitPlanes:
-	lea	Planes,a0
-	move.l	#RAW,d0
+	move.l	a3,a0		;planes
+	adda.l	#56,a0
+	move.l	a3,d0		;RAW
+	add.l	#132,d0
 	moveq	#2,d1
 SetPlanes:	
 	move.w	d0,6(a0)
@@ -145,20 +154,20 @@ OsStore:
 	rts
 ;--------------------------------------------------------------
 OsRestore:
-	move.l	#Copper0,$dff080
-	move.w	#0,$dff088
+	move.l	a3,$dff080
+	move.w	d0,$dff088
 	bsr	VWait
-	move.w	osOldDma,$dff096
-	move.l	gfxBase,a6
+	move.w	osOldDma(pc),$dff096
+	move.l	gfxBase(pc),a6
 	jsr	-228(a6)
 	jsr	-462(a6)
-	move.l	osOldView,a1
+	move.l	osOldView(pc),a1
 	jsr	-222(a6)
 	jsr	-270(a6)
 	jsr	-270(a6)
 	move.l	$26(a6),$dff080
 	move.l	4,a6
-	move.l	gfxBase,a1
+	move.l	gfxBase(pc),a1
 	jsr	-414(a6)
 	rts
 ;--------------------------------------------------------------
@@ -170,10 +179,8 @@ gfxName:	dc.b	"graphics.library",0
 gfxBase:	dc.l	0
 osOldView:	dc.l	0
 osOldDma:	dc.w	0
-chipPtr:	dc.l	0
 
 
-	Section	ChipRam,DATA_C
 
 Copper0:
 	dc.l	$01800000
@@ -190,11 +197,11 @@ Copper:
 	dc.l	$01020000,$01040000
 	dc.l	$01080000,$010a0000
 	dc.l	$00960020
-Planes:
+Planes:					;56
 	dc.l	$00e00000,$00e20000
 	dc.l	$00e40000,$00e60000
 	dc.l	$00e80000,$00ea0000
-Palette:
+Palette:				;80
 col0:	dc.l	$01800110
 col1:	dc.l	$01820220
 col2:	dc.l	$01840330
@@ -203,9 +210,10 @@ col4:	dc.l	$01880580
 col5:	dc.l	$018a06a0
 col6:	dc.l	$018c07c0
 col7:	dc.l	$018e08e0
-
+					;112
 L212:	dc.l	$01fe0000
 Raster:	dc.l	$0001fffe,$0108ffd8,$010affd8
 	dc.l 	$fffffffe
 
 RAW:	incbin "DHC:awesomegamesintros/awesomegames2.raw"
+EndBlock:
