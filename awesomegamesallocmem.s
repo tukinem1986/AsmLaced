@@ -25,7 +25,7 @@ StartLoop:
 	tst.b	Raster
 	beq	.Dwn
 	btst	#6,$bfe001
-	beq	OsRestore
+	beq	End
 	dbf	d7,StartLoop
 	bra	MAINLOOP
 .Dwn
@@ -34,7 +34,7 @@ StartLoop:
 
 
 MAINLOOP:
-
+	move.l	#290,d7
 	bsr	VWait
 	
 CheckMouse:
@@ -46,21 +46,25 @@ CheckMouse:
 	bra	MAINLOOP
 
 End:
-	move.l	#290,d7
+;	move.l	#290,d7
 EndLoop:
 	bsr	VWait
 	subq.b	#1,Raster
 	tst.b	Raster
 	beq	.Up
 	dbf	d7,EndLoop
-	bra	OsRestore	;PROG END
+	bra	ENDPROG
 .Up
 	move.l	#$01fe00,L212
 	subq.b	#1,Raster
 	dbf	d7,EndLoop
-	bsr	OsRestore	;PROG END
+
+
 
 ;--------------------------------------------------------------
+ENDPROG:
+	bsr	OsRestore
+	
 ;FREE MEM FROM CHIP RAM
 	move.l	chipPtr,a1
 	move.l	#30852,d0
